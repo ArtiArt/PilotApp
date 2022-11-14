@@ -6,21 +6,64 @@
     android:layout_height="match_parent"
     tools:context=".SetRouteName"
     android:background="@color/background">
-    <com.google.android.material.appbar.AppBarLayout
-        android:gravity="center"
-        android:id="@+id/appbarLayout"
-        app:statusBarForeground="@color/background"
-        android:background="@color/background"
-        android:layout_marginBottom="20dp"
-        android:fitsSystemWindows="true"
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:src="@mipmap/logooapp"
-            android:layout_gravity="start"
-            android:elevation="0dp"
-            android:layout_width="60dp"
-            android:layout_height="60dp"/>
-    </com.google.android.material.appbar.AppBarLayout>
+        android:layout_height="match_parent">
+        <com.google.android.material.appbar.AppBarLayout
+            android:gravity="center"
+            android:id="@+id/appbarLayout"
+            app:statusBarForeground="@color/background"
+            android:background="@color/background"
+            android:layout_marginBottom="20dp"
+            android:fitsSystemWindows="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:src="@mipmap/logooapp"
+                android:layout_gravity="start"
+                android:elevation="0dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"/>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <EditText
+            android:id="@+id/setNameTV"
+            android:background="@color/white"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="center"
+            android:layout_width="300dp"
+            android:layout_height="50dp"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/startRecordingBtn"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="25dp"
+            app:cardBackgroundColor="#012AF6"
+            app:cardCornerRadius="25dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rozpocznij nagrywanie"
+                    android:textColor="@color/buttonColor"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
