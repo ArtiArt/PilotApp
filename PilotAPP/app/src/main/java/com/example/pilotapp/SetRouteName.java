@@ -40,13 +40,15 @@ public class SetRouteName extends AppCompatActivity {
         startRecordingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                routeName = setNameTextView.getText().toString();
+               routeName = setNameTextView.getText().toString();
 
                 if(routeName.isEmpty()) {
                    emptyRout.show();
                 } else{
                     fileCreator.createFile(con, routeName);
                 }
+                startActivity(new Intent(SetRouteName.this, RecordingRoute.class));
+                finish();
             }
         });
     }
