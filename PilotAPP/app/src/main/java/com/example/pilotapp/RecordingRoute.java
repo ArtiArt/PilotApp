@@ -10,6 +10,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,9 +27,14 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.card.MaterialCardView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RecordingRoute extends AppCompatActivity implements OnMapReadyCallback{
 
@@ -46,11 +52,14 @@ public class RecordingRoute extends AppCompatActivity implements OnMapReadyCallb
 
     FusedLocationProviderClient fusedLocationProviderClient;
 
-    private CreateFileKML createFile;
+    CreateFileKML createFile;
     private boolean threadWorking;
 
     KMLFileWriterThread kmlFileWriterThread = new KMLFileWriterThread();
 
+
+    LatLng[] routePoints;
+    Polyline line;
 
 
     @Override
@@ -71,6 +80,8 @@ public class RecordingRoute extends AppCompatActivity implements OnMapReadyCallb
         Intent intent = getIntent();
         routName = intent.getStringExtra(SetRouteName.Extra_name);
         con = getApplicationContext();
+
+        routePoints = new LatLng[2];
 
         setCreateFile(new CreateFileKML(con, routName));
         getCreateFile().writeStartElementToFile();
@@ -139,10 +150,29 @@ public class RecordingRoute extends AppCompatActivity implements OnMapReadyCallb
             public void onSuccess(Location location) {
                 LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
 
+                PolylineOptions pOptions = new PolylineOptions()
+                        .width(25)
+                        .color(Color.BLUE)
+                        .geodesic(true);
+
+
                 if(isThreadWorking()) {
+                    routePoints[0] = latLng;
+
+                    if(routePoints[1] != null) {
+                        for (int z = 0; z < routePoints.length; z++) {
+                            LatLng point = routePoints[z];
+                            pOptions.add(point);
+                        }
+                    }
+
+                    line = myGoogleMap.addPolyline(pOptions);
+                    routePoints[1] = latLng;
+
                     createFile.writeElementsToFile(location.getLatitude(), location.getLongitude());
-                    Toast.makeText(RecordingRoute.this, "Lat: " + location.getLatitude() + ", lng: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(RecordingRoute.this, "Lat: " + location.getLatitude() + ", lng: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
                 }
+
                 myGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
             }
         });
@@ -175,8 +205,8 @@ public class RecordingRoute extends AppCompatActivity implements OnMapReadyCallb
         return createFile;
     }
 
-    public void setCreateFile(CreateFileKML createFile) {
-        this.createFile = createFile;
+    public void setCreateFile(CreateFileKML cf) {
+        createFile = cf;
     }
 
     //    Thread class to start writing current localisation
