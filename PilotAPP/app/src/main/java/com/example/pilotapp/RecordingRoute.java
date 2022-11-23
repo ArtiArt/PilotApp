@@ -195,4 +195,12 @@ public class RecordingRoute extends AppCompatActivity implements OnMapReadyCallb
             }
         }
     }
+
+    @Override
+    public void onBackPressed(){
+        getCreateFile().deleteFile();
+        Toast.makeText(RecordingRoute.this, "Trasa usunięta", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(RecordingRoute.this, SetRouteName.class));
+        finish();
+    }
 }

@@ -19,12 +19,15 @@ public class CreateFileKML {
     private FileOutputStream fos = null;
     private int point = 1;
 
+    private File currentFile;
+
     public CreateFileKML(Context c, String fileName) {
         //Add new directory
         File mydir = c. getDir("allRoutes", Context.MODE_APPEND);
+        currentFile = new File(mydir, fileName + ".kml");
 
         try {
-            setFos(new FileOutputStream(new File(mydir, fileName + ".kml")));
+            setFos(new FileOutputStream(currentFile));
         } catch (IOException e){
             e.printStackTrace();
         }
@@ -72,6 +75,10 @@ public class CreateFileKML {
         } catch (IOException e){
             e.printStackTrace();
         }
+    }
+
+    public void deleteFile(){
+        currentFile.delete();
     }
 
     private FileOutputStream getFos() {
