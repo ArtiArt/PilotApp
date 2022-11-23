@@ -7,14 +7,17 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -29,13 +32,26 @@ import com.google.android.material.card.MaterialCardView;
 
 public class RecordingRoute extends AppCompatActivity implements OnMapReadyCallback{
 
+    private String routName;
+    Context con = null;
+
     private boolean wasClicked=false;
     private MaterialCardView start_stopRecording;
     private TextView start_stop;
     GoogleMap myGoogleMap;
-    final int ACCESS_LOCATION_REQUEST_CODE=1033;
+    private final int ACCESS_LOCATION_REQUEST_CODE = 1033;
+
+//    Time to saving current localisation to kml file (1000 = 1s)
+    private final int SAVING_TIME = 1000;
 
     FusedLocationProviderClient fusedLocationProviderClient;
+
+    private CreateFileKML createFile;
+    private boolean threadWorking;
+
+    KMLFileWriterThread kmlFileWriterThread = new KMLFileWriterThread();
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,21 +68,32 @@ public class RecordingRoute extends AppCompatActivity implements OnMapReadyCallb
         mapFragment.getMapAsync(this);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
+        Intent intent = getIntent();
+        routName = intent.getStringExtra(SetRouteName.Extra_name);
+        con = getApplicationContext();
+
+        setCreateFile(new CreateFileKML(con, routName));
+        getCreateFile().writeStartElementToFile();
+
+        Thread writingThread = new Thread(kmlFileWriterThread);
+
         start_stopRecording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (wasClicked)
                 {
-                    //write down recorded route and go to MainActivity
-                    /*startActivity(new Intent(RecordingRoute.this, MainActivity.class));
-                    finish();*/
-                    startActivity(new Intent(RecordingRoute.this, Racing.class));
+                    setThreadWorking(false);
+                    getCreateFile().writeEndElementsToFile();
+                    Toast.makeText(RecordingRoute.this, "Trasa dodana", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(RecordingRoute.this, MainActivity.class));
                     finish();
                 }
                 else
                 {
                     //start recording and change text to "Zakończ" and wasClicked on true
-                    wasClicked=true;
+                    setThreadWorking(true);
+                    writingThread.start();
+                    wasClicked = true;
                     start_stop.setText("Zakończ");
                 }
             }
@@ -98,9 +125,12 @@ public class RecordingRoute extends AppCompatActivity implements OnMapReadyCallb
             }
         }
     }
+
+    @SuppressLint("MissingPermission")
     private void enableUserLocation(){
         myGoogleMap.setMyLocationEnabled(true);
     }
+
     private  void  zoomToUserLocation()
     {
         @SuppressLint("MissingPermission") Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
@@ -108,6 +138,11 @@ public class RecordingRoute extends AppCompatActivity implements OnMapReadyCallb
             @Override
             public void onSuccess(Location location) {
                 LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
+
+                if(isThreadWorking()) {
+                    createFile.writeElementsToFile(location.getLatitude(), location.getLongitude());
+                    Toast.makeText(RecordingRoute.this, "Lat: " + location.getLatitude() + ", lng: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                }
                 myGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
             }
         });
@@ -119,11 +154,44 @@ public class RecordingRoute extends AppCompatActivity implements OnMapReadyCallb
         if (requestCode == ACCESS_LOCATION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 enableUserLocation();
-                zoomToUserLocation();
+//                zoomToUserLocation();
             }
             else
             {
 
+            }
+        }
+    }
+
+    private boolean isThreadWorking() {
+        return threadWorking;
+    }
+
+    private void setThreadWorking(boolean threadWorking) {
+        this.threadWorking = threadWorking;
+    }
+
+    public CreateFileKML getCreateFile() {
+        return createFile;
+    }
+
+    public void setCreateFile(CreateFileKML createFile) {
+        this.createFile = createFile;
+    }
+
+    //    Thread class to start writing current localisation
+    private class KMLFileWriterThread implements Runnable {
+        @Override
+        public void run() {
+            while (isThreadWorking()) {
+                zoomToUserLocation();
+
+                Log.i("Watek", "Jestem w watek");
+                try {
+                    Thread.sleep(SAVING_TIME);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

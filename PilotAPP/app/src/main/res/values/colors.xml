@@ -10,5 +10,6 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="background">#03163B</color>
+    <color name="backgroundButton">#012AF6</color>
     <color name="buttonColor">#25C3C8</color>
 </resources>

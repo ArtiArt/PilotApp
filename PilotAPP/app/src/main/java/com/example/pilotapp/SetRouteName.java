@@ -21,6 +21,8 @@ public class SetRouteName extends AppCompatActivity {
 
     Context con = null;
 
+    protected static final String Extra_name = "routName";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,9 +33,7 @@ public class SetRouteName extends AppCompatActivity {
 
         setNameTextView = findViewById(R.id.setNameTV);
         startRecordingButton = findViewById(R.id.startRecordingBtn);
-        CreateFileKML fileCreator = new CreateFileKML();
         con = getApplicationContext();
-        Toast emptyRout = Toast.makeText(this, "Wprowadź nazwę trasy!", Toast.LENGTH_SHORT);
 
 
 
@@ -43,12 +43,13 @@ public class SetRouteName extends AppCompatActivity {
                routeName = setNameTextView.getText().toString();
 
                 if(routeName.isEmpty()) {
-                   emptyRout.show();
+                    Toast.makeText(SetRouteName.this, "Wprowadź nazwę trasy!", Toast.LENGTH_SHORT).show();
                 } else{
-                    fileCreator.createFile(con, routeName);
+                    Intent intent = new Intent(SetRouteName.this, RecordingRoute.class);
+                    intent.putExtra(Extra_name, routeName);
+                    startActivity(intent);
+                    finish();
                 }
-                startActivity(new Intent(SetRouteName.this, RecordingRoute.class));
-                finish();
             }
         });
     }

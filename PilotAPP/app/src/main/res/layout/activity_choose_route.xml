@@ -10,7 +10,6 @@
     <com.google.android.material.appbar.AppBarLayout
         android:gravity="center"
         android:id="@+id/appbarLayout"
-        app:statusBarForeground="@color/background"
         android:background="@color/background"
         android:layout_marginBottom="20dp"
         android:fitsSystemWindows="true"
