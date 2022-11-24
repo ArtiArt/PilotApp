@@ -8,7 +8,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bf2ef146-987d-4564-a4bd-dd384c15e5df" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/PilotAPP/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/PilotAPP/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PilotAPP/app/src/main/java/com/example/pilotapp/ChooseRoute.java" beforeDir="false" afterPath="$PROJECT_DIR$/PilotAPP/app/src/main/java/com/example/pilotapp/ChooseRoute.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PilotAPP/app/src/main/res/layout/activity_choose_route.xml" beforeDir="false" afterPath="$PROJECT_DIR$/PilotAPP/app/src/main/res/layout/activity_choose_route.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,7 +23,7 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectId" id="2HVXre6uDf5qmT8G0kJruiyicQR" />
   <component name="ProjectViewState">
@@ -35,12 +36,14 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
     <property name="cidr.known.project.marker" value="true" />
+    <property name="dart.analysis.tool.window.visible" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/PilotAPP" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
     <property name="settings.editor.selected.configurable" value="project.scopes" />
+    <property name="show.migrate.to.gradle.popup" value="false" />
     <property name="two.files.diff.last.used.folder" value="$USER_HOME$/Desktop/GitRepo/demo-repo" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
