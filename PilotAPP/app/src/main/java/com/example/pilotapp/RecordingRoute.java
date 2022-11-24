@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.card.MaterialCardView;
+import com.google.maps.android.SphericalUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,11 +40,12 @@ import java.util.List;
 public class RecordingRoute extends AppCompatActivity implements OnMapReadyCallback{
 
     private String routName;
+    double distance, finalDistance;
     Context con = null;
 
     private boolean wasClicked=false;
     private MaterialCardView start_stopRecording;
-    private TextView start_stop;
+    private TextView start_stop, tvDistance;
     GoogleMap myGoogleMap;
     private final int ACCESS_LOCATION_REQUEST_CODE = 1033;
 
@@ -72,6 +74,7 @@ public class RecordingRoute extends AppCompatActivity implements OnMapReadyCallb
 
         start_stopRecording = findViewById(R.id.start_stopRecordingBtn);
         start_stop=findViewById(R.id.start_stop);
+        tvDistance = findViewById(R.id.distanceTV);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.maps);
         mapFragment.getMapAsync(this);
@@ -148,32 +151,38 @@ public class RecordingRoute extends AppCompatActivity implements OnMapReadyCallb
         locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
 
-                PolylineOptions pOptions = new PolylineOptions()
-                        .width(25)
-                        .color(Color.BLUE)
-                        .geodesic(true);
+                if (location != null) {
+                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
 
-                if(isThreadWorking()) {
-                    routePoints[0] = latLng;
+                    PolylineOptions pOptions = new PolylineOptions()
+                            .width(25)
+                            .color(Color.BLUE)
+                            .geodesic(true);
 
-                    if(routePoints[1] != null) {
-                        for (int z = 0; z < routePoints.length; z++) {
-                            LatLng point = routePoints[z];
-                            pOptions.add(point);
+
+                    if (isThreadWorking()) {
+                        routePoints[0] = latLng;
+
+                        if (routePoints[1] != null) {
+                            for (int z = 0; z < routePoints.length; z++) {
+                                LatLng point = routePoints[z];
+                                pOptions.add(point);
+                            }
+                            distance = distance + SphericalUtil.computeDistanceBetween(routePoints[0], routePoints[1]);
+                            finalDistance = distance/1000;
+                            tvDistance.setText("Dystans: " + Math.round(finalDistance*100.0)/100.0 +" km");
                         }
+
+                        line = myGoogleMap.addPolyline(pOptions);
+                        routePoints[1] = latLng;
+
+                        createFile.writeElementsToFile(location.getLatitude(), location.getLongitude());
                     }
 
-                    line = myGoogleMap.addPolyline(pOptions);
-                    routePoints[1] = latLng;
-
-                    createFile.writeElementsToFile(location.getLatitude(), location.getLongitude());
-//                    Toast.makeText(RecordingRoute.this, "Lat: " + location.getLatitude() + ", lng: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                    myGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                 }
-
-                myGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
             }
         });
     }
@@ -184,7 +193,7 @@ public class RecordingRoute extends AppCompatActivity implements OnMapReadyCallb
         if (requestCode == ACCESS_LOCATION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 enableUserLocation();
-//                zoomToUserLocation();
+                zoomToUserLocation();
             }
             else
             {
@@ -216,7 +225,6 @@ public class RecordingRoute extends AppCompatActivity implements OnMapReadyCallb
             while (isThreadWorking()) {
                 zoomToUserLocation();
 
-                Log.i("Watek", "Jestem w watek");
                 try {
                     Thread.sleep(SAVING_TIME);
                 } catch (InterruptedException e) {
