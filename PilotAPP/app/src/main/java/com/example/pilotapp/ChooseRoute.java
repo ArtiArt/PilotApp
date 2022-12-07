@@ -4,11 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
-public class ChooseRoute extends AppCompatActivity {
+import com.google.android.material.card.MaterialCardView;
 
+public class ChooseRoute extends AppCompatActivity {
+    private MaterialCardView chooseRouteButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -16,6 +19,15 @@ public class ChooseRoute extends AppCompatActivity {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_choose_route);
+        chooseRouteButton = findViewById(R.id.chooseRouteBtn);
+        chooseRouteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(ChooseRoute.this, Racing.class));
+                finish();
+            }
+        });
+
     }
 
     @Override

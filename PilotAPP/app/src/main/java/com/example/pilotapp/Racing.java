@@ -7,8 +7,10 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
@@ -22,18 +24,36 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.card.MaterialCardView;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class Racing extends AppCompatActivity implements OnMapReadyCallback{
 
     private boolean wasClicked=false;
     private MaterialCardView start_stopBtn;
-    private TextView start_stop;
+    private TextView start_stop, routeDiscription;
     GoogleMap myGoogleMap;
-    final int ACCESS_LOCATION_REQUEST_CODE=1033;
+    private final int ACCESS_LOCATION_REQUEST_CODE=1033;
     FusedLocationProviderClient fusedLocationProviderClient;
+    LatLng[] routePoints;
+    Polyline line;
+    private static final String FILE_NAME = "/data/data/com.example.pilotapp/app_allRoutes/2.kml";
+    List<LatLng> filePoints;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +64,14 @@ public class Racing extends AppCompatActivity implements OnMapReadyCallback{
         setContentView(R.layout.activity_racing);
         start_stopBtn = findViewById(R.id.start_stopBtn);
         start_stop=findViewById(R.id.start_stop);
+        routeDiscription=findViewById(R.id.routeDiscription);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.maps);
         mapFragment.getMapAsync(this);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        routePoints = new LatLng[2];
+        filePoints = new ArrayList<LatLng>();
         start_stopBtn.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -63,7 +87,51 @@ public class Racing extends AppCompatActivity implements OnMapReadyCallback{
                 {
                     //start recording time and change text to "Stop" and wasClicked on true
                     wasClicked=true;
-                    start_stop.setText("Stop");
+                   /* FileInputStream fis =null;
+                    String nextPoints="";
+                    try {
+
+                        fis = new FileInputStream(new File(FILE_NAME));
+                        InputStreamReader isr = new InputStreamReader(fis);
+                        BufferedReader br = new BufferedReader(isr);
+                        StringBuilder sb = new StringBuilder();
+                        String text;
+                        while ((text = br.readLine()) != null){
+                            sb.append(text).append("#\n");
+                        }
+                        nextPoints=sb.toString();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    finally {
+                        if(fis != null){
+                            try{
+                                fis.close();
+                            }
+                            catch (IOException e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    String[] myArray=nextPoints.split("#");
+
+                    for(int i = 0; i<myArray.length;i++){
+
+                        if(myArray[i].contains("coordinates")){
+                            String temp =myArray[i].replaceFirst("<coordinates>","");
+                            temp=temp.replaceFirst("</coordinates>","");
+                            String[] cordin = temp.split(",");
+                            double lat = Double.parseDouble(cordin[0]);
+                            double lng = Double.parseDouble(cordin[1]);
+                            LatLng tempLatLng = new LatLng(lat,lng);
+                            filePoints.add(tempLatLng);
+                        }
+
+                    }
+                    routeDiscription.setText(Double.toString(filePoints.get(1).longitude));*/
                 }
             }
         });
@@ -103,7 +171,29 @@ public class Racing extends AppCompatActivity implements OnMapReadyCallback{
         locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
+
                 LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
+
+                PolylineOptions pOptions = new PolylineOptions()
+                        .width(25)
+                        .color(Color.BLUE)
+                        .geodesic(true);
+                    LatLng point = new LatLng(21.02538838686819,52.22821593405059 );
+                    //LatLng point1 = new LatLng(21.024978542191455,52.228057112498625 );
+                    //LatLng point2 = new LatLng(21.029289869364764,52.22553392163475);
+
+                pOptions.add(latLng);
+                 pOptions.add(point);
+
+               // pOptions.add(point1);
+                 //pOptions.add(point2);
+
+
+
+                //myGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                //Polyline polyline = myGoogleMap.addPolyline(pOptions);
+                 //line = myGoogleMap.addPolyline(pOptions);
+
                 myGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
             }
         });
