@@ -37,10 +37,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+<<<<<<< HEAD
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+=======
+import java.util.ArrayList;
+import java.util.List;
+>>>>>>> ArtBranch
 
 public class Racing extends AppCompatActivity implements OnMapReadyCallback{
 
@@ -54,7 +59,11 @@ public class Racing extends AppCompatActivity implements OnMapReadyCallback{
     FusedLocationProviderClient fusedLocationProviderClient;
     LatLng[] routePoints;
     Polyline line;
+<<<<<<< HEAD
     private static final String FILE_NAME = "/data/data/com.example.pilotapp/app_allRoutes/2.kml";
+=======
+    private static final String FILE_NAME = "/data/data/com.example.pilotapp/app_allRoutes/";
+>>>>>>> ArtBranch
     List<LatLng> filePoints=null;
     LatLng myLocation;
     double distance, finalDistance;
@@ -76,8 +85,12 @@ public class Racing extends AppCompatActivity implements OnMapReadyCallback{
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         Intent intent = getIntent();
+<<<<<<< HEAD
         routName = intent.getStringExtra(SetRouteName.Extra_name);
         con = getApplicationContext();
+=======
+       routName = intent.getStringExtra("chosenTrace");
+>>>>>>> ArtBranch
         routePoints = new LatLng[2];
         filePoints = new ArrayList<LatLng>();
         start_stopBtn.setOnClickListener(new View.OnClickListener(){
@@ -94,8 +107,12 @@ public class Racing extends AppCompatActivity implements OnMapReadyCallback{
                 else
                 {
                     //start recording time and change text to "Stop" and wasClicked on true
+                    ReedFromKml();
                     wasClicked=true;
+<<<<<<< HEAD
                    ReedFromKml();
+=======
+>>>>>>> ArtBranch
                 }
             }
         });
@@ -124,6 +141,7 @@ public class Racing extends AppCompatActivity implements OnMapReadyCallback{
                         ACCESS_LOCATION_REQUEST_CODE);
             }
         }
+
     }
     @SuppressLint("MissingPermission")
     private void enableUserLocation(){
@@ -137,6 +155,7 @@ public class Racing extends AppCompatActivity implements OnMapReadyCallback{
             public void onSuccess(Location location) {
 
                 LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
+<<<<<<< HEAD
                 double first=52.22630132811354;
                 double second=21.027642057671056;
                 first=first+3;
@@ -165,8 +184,13 @@ public class Racing extends AppCompatActivity implements OnMapReadyCallback{
                  line = myGoogleMap.addPolyline(pOptions);*/
 
                 myGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 5));
+=======
+                myLocation = new LatLng(location.getLatitude(),location.getLongitude());
+                myGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+>>>>>>> ArtBranch
             }
         });
+
     }
 
     @Override
@@ -185,6 +209,7 @@ public class Racing extends AppCompatActivity implements OnMapReadyCallback{
     }
 
     private void ReedFromKml(){
+<<<<<<< HEAD
           FileInputStream fis =null;
                     String nextPoints="";
                     try {
@@ -222,10 +247,48 @@ public class Racing extends AppCompatActivity implements OnMapReadyCallback{
 
                         if(myArray[i].contains("coordinates")){
                             /*String temp =myArray[i].replaceFirst("<coordinates>","");
+=======
+        FileInputStream fis =null;
+        String nextPoints="";
+        try {
+            String fileName = FILE_NAME + routName;
+            fis = new FileInputStream(new File(fileName));
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String text;
+            while ((text = br.readLine()) != null){
+                sb.append(text).append("#\n");
+            }
+            nextPoints=sb.toString();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            if(fis != null){
+                try{
+                    fis.close();
+                }
+                catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        String[] myArray=nextPoints.split("#");
+        int k=0;
+        for(int i = 0; i<myArray.length;i++){
+
+            if(myArray[i].contains("coordinates")){
+                            String temp =myArray[i].replaceFirst("<coordinates>","");
+>>>>>>> ArtBranch
                             temp=temp.replaceFirst("</coordinates>","");
                             String[] cordin = temp.split(",");
                             double lat = Double.parseDouble(cordin[0]);
                             double lng = Double.parseDouble(cordin[1]);
+<<<<<<< HEAD
                             LatLng tempLatLng = new LatLng(lat,lng);*/
 
 
@@ -256,6 +319,35 @@ public class Racing extends AppCompatActivity implements OnMapReadyCallback{
                  }
                  line = myGoogleMap.addPolyline(pOptions);
        routeDiscription.setText("Dystans: " + Math.round(finalDistance*100.0)/100.0 +" km");
+=======
+                            LatLng tempLatLng = new LatLng(lat,lng);
+
+                LatLng latTemp = new LatLng(lat, lng);
+                filePoints.add(latTemp);
+            }
+        }
+        PolylineOptions pOptions = new PolylineOptions()
+                .width(25)
+                .color(Color.BLUE)
+                .geodesic(true);
+        for(int i =0; i<filePoints.size();i++){
+            pOptions.add(filePoints.get(i));
+        }
+        int p=0;
+        for(int i =0; i<filePoints.size();i++){
+            if(filePoints.get(i).latitude==myLocation.latitude && filePoints.get(i).longitude==myLocation.longitude){
+                p=i;
+            }
+        }
+        for(;p<filePoints.size();p++){
+            if(p<filePoints.size()-1 ){
+                distance = distance + SphericalUtil.computeDistanceBetween(filePoints.get(p), filePoints.get(p + 1));
+                finalDistance = distance / 1000;
+            }
+        }
+        line = myGoogleMap.addPolyline(pOptions);
+        routeDiscription.setText("Dystans: " + Math.round(finalDistance*100.0)/100.0 +" km");
+>>>>>>> ArtBranch
     }
 
 }
