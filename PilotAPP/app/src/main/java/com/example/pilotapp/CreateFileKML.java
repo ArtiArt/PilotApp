@@ -52,7 +52,7 @@ public class CreateFileKML {
                 "\t<Placemark>\n" +
                 "\t\t<name>Punkt "+ point +"</name>\n" +
                 "\t<Point>\n" +
-                "\t\t<coordinates>"+lng+","+lat+"</coordinates>\n" +
+                "\t\t<coordinates>"+lat+","+lng+"</coordinates>\n" +
                 "\t</Point>\n" +
                 "\t</Placemark>\n";
 
